@@ -15,14 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // add npm install -d @types/express
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
-mongoose_1.default.connect("mongodb+srv://adnan7398:781786%40Aa@cluster0.goqn5.mongodb.net/secondbrain");
+mongoose_1.default.connect("mongodb+srv://adnan7398:781786%40Aa@cluster0.goqn5.mongodb.net/secondsbrain");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const zod_1 = __importDefault(require("zod"));
+const config_1 = require("./config");
 const db_1 = require("./db");
 const bcrypt = require("bcrypt");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
-const jwt_secret = "123adnan";
+const middleware_1 = require("./middleware");
 // dev means developement ke time use krte hain 
 app.post("/api/vi/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const requirebody = zod_1.default.object({
@@ -56,13 +57,13 @@ app.post("/api/vi/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
     catch (e) {
         res.status(403).json({
-            message: "useralready Exist"
+            message: "user already Exist"
         });
         errorthrown = true;
     }
     if (!errorthrown) {
         res.status(200).json({
-            message: "You Are successfuly login"
+            message: "You Are successfuly signed Up"
         });
     }
 }));
@@ -82,8 +83,9 @@ app.post("/api/vi/signin", (req, res) => __awaiter(void 0, void 0, void 0, funct
     if (comparepassword) {
         const token = jsonwebtoken_1.default.sign({
             id: response._id.toString()
-        }, jwt_secret);
+        }, config_1.JWT_SECRET);
         res.status(200).json({
+            token: token,
             message: "You are succesfully login"
         });
     }
@@ -93,9 +95,30 @@ app.post("/api/vi/signin", (req, res) => __awaiter(void 0, void 0, void 0, funct
         });
     }
 }));
-app.get("api/vi/content", (req, res) => {
-});
-app.delete("api/vi/content", (req, res) => {
+app.post("/api/vi/content", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const link = req.body.link;
+    const tittle = req.body.tittle;
+    yield db_1.contentmodel.create({
+        link,
+        tittle,
+        //@ts-ignore
+        UserId: req.userId,
+        tags: []
+    });
+    res.json({
+        messsage: "content added"
+    });
+}));
+app.get("/api/vi/content", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const content = yield db_1.contentmodel.find({
+        //@ts-ignore
+        userId: req.userId,
+    }).populate("UserId", "email");
+    res.json({
+        content
+    });
+}));
+app.delete("api/vi/contents", (req, res) => {
 });
 app.post("api/vi/shares", (req, res) => {
 });

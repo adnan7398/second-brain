@@ -11,10 +11,10 @@ const contentTypes = ['image', 'video', 'article', 'audio'];
 
 const Content = new mongoose.Schema({
     link:{type:String,required:true},
-    type:{type:String,enum:contentTypes,required:true},
+    // type:{type:String,enum:contentTypes,required:true},
     tittle:{type:String,required:true},
-    tags:[{type:Types.ObjectId,ref:'Tags',required:true}],
-    UserId:{type:Types.ObjectId,ref:'User', required:true},
+    tags:[{type:mongoose.Types.ObjectId,ref:'Tags',required:true}],
+    UserId:{type:mongoose.Types.ObjectId,ref:'user', required:true},
 })
 
 const link = new mongoose.Schema({

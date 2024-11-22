@@ -6,7 +6,7 @@ export function Usermiddleware(req:Request,res:Response,next:NextFunction){
     const  decoded = jwt.verify(token as string,JWT_SECRET);
     if(decoded){
        // @ts-ignore
-        req.userId = decoded.id ;
+        req.userId = decoded.userId
         next();
     }else{
         res.status(403).json({
