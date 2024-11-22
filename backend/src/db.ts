@@ -19,7 +19,7 @@ const Content = new mongoose.Schema({
 
 const link = new mongoose.Schema({
     hash:{type:String,},
-    userID:{type:Types.ObjectId,ref:'User', required:true}, 
+    userId:{type:Types.ObjectId,ref:'user', required:true}, 
 })
 
 

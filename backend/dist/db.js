@@ -42,7 +42,7 @@ const Content = new mongoose_1.default.Schema({
 });
 const link = new mongoose_1.default.Schema({
     hash: { type: String, },
-    userID: { type: mongoose_1.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: mongoose_1.Types.ObjectId, ref: 'user', required: true },
 });
 exports.Usermodel = mongoose_1.default.model("user", User);
 exports.Tagsmodel = mongoose_1.default.model("tags", Tags);

@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // add npm install -d @types/express
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
-mongoose_1.default.connect("mongodb+srv://adnan7398:781786%40Aa@cluster0.goqn5.mongodb.net/secondsbrain");
+mongoose_1.default.connect("mongodb+srv://adnan7398:781786%40Aa@cluster0.goqn5.mongodb.net/brainly");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const zod_1 = __importDefault(require("zod"));
 const config_1 = require("./config");
@@ -120,8 +120,24 @@ app.get("/api/vi/content", middleware_1.Usermiddleware, (req, res) => __awaiter(
 }));
 app.delete("api/vi/contents", (req, res) => {
 });
-app.post("api/vi/shares", (req, res) => {
-});
+app.post("/api/vi/shares", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const hash = req.body;
+        //@ts-ignore
+        const userId = req.userId;
+        yield db_1.Linkmodel.create({
+            hash,
+            userId: userId
+        });
+        res.status(200).json({
+            message: "link created"
+        });
+    }
+    catch (e) {
+        console.error("Error creating link:", e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}));
 app.get("api/vi/sharelink", (req, res) => {
 });
 app.listen(3000);

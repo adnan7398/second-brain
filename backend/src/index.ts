@@ -1,7 +1,7 @@
 // add npm install -d @types/express
 import express from "express";
 import mongoose from "mongoose";
-mongoose.connect("mongodb+srv://adnan7398:781786%40Aa@cluster0.goqn5.mongodb.net/secondsbrain");
+mongoose.connect("mongodb+srv://adnan7398:781786%40Aa@cluster0.goqn5.mongodb.net/brainly");
 import jwt from "jsonwebtoken";
 import z from "zod"; 
 import { JWT_SECRET } from "./config";
@@ -111,21 +111,23 @@ app.delete("api/vi/contents",(req,res)=>{
     
 })
 
-app.post("api/vi/shares",Usermiddleware, async (req,res)=>{
-    //@ts-ignore
-    const userId = req.userId;
-    const hash = req.body;
-    const existingLink = await Linkmodel.findOne({
-        hash:hash
-    })
-    if(existingLink){
-        res.status(400).json({
-            Message:"Hash already exist"
+app.post("/api/vi/shares",Usermiddleware, async (req,res)=>{
+    try{
+        const hash = req.body;
+        //@ts-ignore
+        const userId = req.userId;
+        await  Linkmodel.create({
+            hash,
+            userId:userId
         })
-        return 
+        res.status(200).json({
+            message:"link created"
+        })
+    }catch(e){
+        console.error("Error creating link:", e);
+        res.status(500).json({ error: "Internal Server Error" });
     }
-
-})
+});
 
 app.get("api/vi/sharelink",(req,res)=>{
 
