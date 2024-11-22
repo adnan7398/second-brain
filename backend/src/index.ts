@@ -5,7 +5,7 @@ mongoose.connect("mongodb+srv://adnan7398:781786%40Aa@cluster0.goqn5.mongodb.net
 import jwt from "jsonwebtoken";
 import z from "zod"; 
 import { JWT_SECRET } from "./config";
-import { contentmodel, Usermodel } from "./db";
+import { contentmodel, Linkmodel, Usermodel } from "./db";
 const bcrypt = require("bcrypt");
 const app = express();
 app.use(express.json());
@@ -108,10 +108,22 @@ app.get("/api/vi/content",Usermiddleware,async(req,res)=>{
     })
 })
 app.delete("api/vi/contents",(req,res)=>{
-
+    
 })
 
-app.post("api/vi/shares",(req,res)=>{
+app.post("api/vi/shares",Usermiddleware, async (req,res)=>{
+    //@ts-ignore
+    const userId = req.userId;
+    const hash = req.body;
+    const existingLink = await Linkmodel.findOne({
+        hash:hash
+    })
+    if(existingLink){
+        res.status(400).json({
+            Message:"Hash already exist"
+        })
+        return 
+    }
 
 })
 
