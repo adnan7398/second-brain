@@ -1,16 +1,18 @@
 
 import './App.css'
-import {Button} from './components/ui/button'
+import { PlusIcon } from './icons/plusicon'
+import { ShareIcon } from './icons/sharIcon'
+import { Button } from './components/button'
+import { Card } from './components/card'
 function App() {
 
-  return (
-    <>
-      <Button size="sm" variant='primary' text ="Share"/>
-      <Button size="md" variant='primary' text ="Share"/>
-        
-        
-    </>
+
+  return ( <div>
+      <Button variant='primary' text="Add Content"  startIcon ={<PlusIcon/>}></Button>
+      <Button variant = 'secondry' text="Share Brain"  startIcon={<ShareIcon/>}></Button>
+      <Card></Card>
+  </div>
   )
 }
- 
+
 export default App

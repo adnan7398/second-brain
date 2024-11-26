@@ -159,7 +159,7 @@ app.post("/api/vi/brain/shares",Usermiddleware, async (req,res)=>{
 
 });
 
-app.get("/api/vi/brain/:sharelink",Usermiddleware,async(req,res)=>{
+app.get("/api/vi/brain/:sharelink",async(req,res)=>{
     const hash = req.params.sharelink;
     const link = await Linkmodel.findOne({
         hash
@@ -175,7 +175,7 @@ app.get("/api/vi/brain/:sharelink",Usermiddleware,async(req,res)=>{
         userId:link.userId
     })
     const user = await Usermodel.findOne({
-        userId:link.userId
+        _id:link.userId.toString()
     })
     if(!user){
         res.status(411).json({
