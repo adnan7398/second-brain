@@ -10,6 +10,7 @@ const bcrypt = require("bcrypt");
 const app = express();
 app.use(express.json());
 import { Usermiddleware } from "./middleware";
+import { random } from "./utils";
 
 
 // dev means developement ke time use krte hain 
@@ -112,21 +113,21 @@ app.delete("api/vi/contents",(req,res)=>{
 })
 
 app.post("/api/vi/shares",Usermiddleware, async (req,res)=>{
-    try{
-        const hash = req.body;
-        //@ts-ignore
-        const userId = req.userId;
-        await  Linkmodel.create({
-            hash,
-            userId:userId
+    const share = req.body.share;
+    if(share){
+         await Linkmodel.create({
+            //@ts-ignore
+            userId:req.userId,
+            hash:random(10)
         })
-        res.status(200).json({
-            message:"link created"
-        })
-    }catch(e){
-        console.error("Error creating link:", e);
-        res.status(500).json({ error: "Internal Server Error" });
     }
+    else{
+        await Linkmodel.deleteOne({
+            //@ts-ignore
+            userId : req.userId
+        })
+    }
+
 });
 
 app.get("api/vi/sharelink",(req,res)=>{
