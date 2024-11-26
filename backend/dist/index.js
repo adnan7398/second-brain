@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // add npm install -d @types/express
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
-mongoose_1.default.connect("mongodb+srv://adnan7398:781786%40Aa@cluster0.goqn5.mongodb.net/brainly");
+mongoose_1.default.connect("mongodb+srv://adnan7398:781786%40Aa@cluster0.goqn5.mongodb.net/secondbrain");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const zod_1 = __importDefault(require("zod"));
 const config_1 = require("./config");
@@ -24,6 +24,7 @@ const bcrypt = require("bcrypt");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 const middleware_1 = require("./middleware");
+const utils_1 = require("./utils");
 // dev means developement ke time use krte hain 
 app.post("/api/vi/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const requirebody = zod_1.default.object({
@@ -101,8 +102,7 @@ app.post("/api/vi/content", middleware_1.Usermiddleware, (req, res) => __awaiter
     yield db_1.contentmodel.create({
         link,
         tittle,
-        //@ts-ignore
-        UserId: req.userId,
+        userId: req.userId,
         tags: []
     });
     res.json({
@@ -111,33 +111,87 @@ app.post("/api/vi/content", middleware_1.Usermiddleware, (req, res) => __awaiter
 }));
 app.get("/api/vi/content", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const content = yield db_1.contentmodel.find({
-        //@ts-ignore
         userId: req.userId,
-    }).populate("UserId", "email");
+    }).populate("userId", "email");
     res.json({
         content
     });
 }));
-app.delete("api/vi/contents", (req, res) => {
-});
-app.post("/api/vi/shares", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.delete("/api/vi/contents", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield db_1.contentmodel.deleteOne({
+        userId: req.userId
+    });
+    res.json({
+        Message: "content deleted"
+    });
+}));
+app.post("/api/vi/brain/shares", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const share = req.body.share;
     try {
-        const hash = req.body;
-        //@ts-ignore
-        const userId = req.userId;
-        yield db_1.Linkmodel.create({
-            hash,
-            userId: userId
-        });
-        res.status(200).json({
-            message: "link created"
+        if (share) {
+            const existinglink = yield db_1.Linkmodel.findOne({
+                userId: req.userId
+            });
+            if (existinglink) {
+                res.json({
+                    hash: existinglink.hash
+                });
+                return;
+            }
+            const hash = (0, utils_1.random)(10);
+            yield db_1.Linkmodel.create({
+                userId: req.userId,
+                hash: hash
+            });
+            res.json({
+                hash
+            });
+        }
+        else {
+            yield db_1.Linkmodel.deleteOne({
+                userId: req.userId
+            });
+            res.json({
+                message: "link has been removed"
+            });
+            return;
+        }
+        res.json({
+            message: "updated Sharable link ",
         });
     }
     catch (e) {
-        console.error("Error creating link:", e);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(400).json({
+            message: "unable to updated shareable link "
+        });
     }
 }));
-app.get("api/vi/sharelink", (req, res) => {
-});
+app.get("/api/vi/brain/:sharelink", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const hash = req.params.sharelink;
+    const link = yield db_1.Linkmodel.findOne({
+        hash
+    });
+    if (!link || !hash) {
+        res.status(411).json({
+            message: "sorry incorrect input "
+        });
+        return;
+    } // userid to mil giy 
+    const content = yield db_1.contentmodel.find({
+        userId: link.userId
+    });
+    const user = yield db_1.Usermodel.findOne({
+        userId: link.userId
+    });
+    if (!user) {
+        res.status(411).json({
+            message: "user not found , error should ideally not happed  "
+        });
+        return;
+    }
+    res.json({
+        email: user.email,
+        content: content
+    });
+}));
 app.listen(3000);

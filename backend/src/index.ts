@@ -1,7 +1,7 @@
 // add npm install -d @types/express
 import express from "express";
 import mongoose from "mongoose";
-mongoose.connect("mongodb+srv://adnan7398:781786%40Aa@cluster0.goqn5.mongodb.net/brainly");
+mongoose.connect("mongodb+srv://adnan7398:781786%40Aa@cluster0.goqn5.mongodb.net/secondbrain");
 import jwt from "jsonwebtoken";
 import z from "zod"; 
 import { JWT_SECRET } from "./config";
@@ -90,8 +90,7 @@ app.post("/api/vi/content",Usermiddleware,async(req,res)=>{
     await contentmodel.create({
         link,
         tittle,
-        //@ts-ignore
-        UserId:req.userId, 
+        userId:req.userId, 
         tags:[]   
     })
     res.json({
@@ -101,36 +100,93 @@ app.post("/api/vi/content",Usermiddleware,async(req,res)=>{
 })
 app.get("/api/vi/content",Usermiddleware,async(req,res)=>{
     const content = await contentmodel.find({
-         //@ts-ignore
         userId:req.userId, 
-    }).populate("UserId","email");
+    }).populate("userId","email");
     res.json({
         content
     })
 })
-app.delete("api/vi/contents",(req,res)=>{
-    
+app.delete("/api/vi/contents",Usermiddleware,async(req,res)=>{
+    await contentmodel.deleteOne({
+        userId : req.userId
+    })
+    res.json({
+        Message:"content deleted"
+    })
+
 })
 
-app.post("/api/vi/shares",Usermiddleware, async (req,res)=>{
+app.post("/api/vi/brain/shares",Usermiddleware, async (req,res)=>{
     const share = req.body.share;
-    if(share){
-         await Linkmodel.create({
-            //@ts-ignore
+    try{
+        if(share){
+            const existinglink = await Linkmodel.findOne({
+                userId:req.userId
+            });
+            if(existinglink){
+                res.json({
+                    hash:existinglink.hash
+                })
+                return;
+            }
+            const hash = random(10);
+            await Linkmodel.create({
             userId:req.userId,
-            hash:random(10)
-        })
+            hash:hash
+            });
+
+            res.json({
+                hash
+            })
+        }
+        else{
+            await Linkmodel.deleteOne({
+                userId : req.userId
+            });
+            res.json({
+                message:"link has been removed"
+            })
+            return;
     }
-    else{
-        await Linkmodel.deleteOne({
-            //@ts-ignore
-            userId : req.userId
-        })
-    }
+    res.json({
+        message:"updated Sharable link ",
+    })
+}catch(e){
+    res.status(400).json({
+        message:"unable to updated shareable link "
+    })
+}
 
 });
 
-app.get("api/vi/sharelink",(req,res)=>{
+app.get("/api/vi/brain/:sharelink",Usermiddleware,async(req,res)=>{
+    const hash = req.params.sharelink;
+    const link = await Linkmodel.findOne({
+        hash
+    });
+    if(!link||!hash){
+        res.status(411).json({
+            message:"sorry incorrect input "
+        })
+        return;
+    }// userid to mil giy 
+   
+    const content = await contentmodel.find({
+        userId:link.userId
+    })
+    const user = await Usermodel.findOne({
+        userId:link.userId
+    })
+    if(!user){
+        res.status(411).json({
+            message:"user not found , error should ideally not happed  "
+        })
+        return;
+    }
+    res.json({
+        email:user.email,
+        content :content
 
+    })
 })
 app.listen(3000);

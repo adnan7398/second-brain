@@ -3,20 +3,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Usermiddleware = Usermiddleware;
-const config_1 = require("./config");
+exports.Usermiddleware = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-function Usermiddleware(req, res, next) {
-    const token = req.headers["authorization"];
-    const decoded = jsonwebtoken_1.default.verify(token, config_1.JWT_SECRET);
+const config_1 = require("./config");
+const Usermiddleware = (req, res, next) => {
+    const header = req.headers["authorization"];
+    const decoded = jsonwebtoken_1.default.verify(header, config_1.JWT_SECRET);
     if (decoded) {
-        // @ts-ignore
-        req.userId = decoded.userId;
+        if (typeof decoded === "string") {
+            res.status(403).json({
+                message: "You are not logged in"
+            });
+            return;
+        }
+        req.userId = decoded.id;
         next();
     }
     else {
         res.status(403).json({
-            message: "you are not logged in"
+            message: "You are not logged in"
         });
     }
-}
+};
+exports.Usermiddleware = Usermiddleware;
