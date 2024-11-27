@@ -11,8 +11,9 @@ const app = express();
 app.use(express.json());
 import { Usermiddleware } from "./middleware";
 import { random } from "./utils";
+import cors from "cors"
 
-
+app.use(cors());
 // dev means developement ke time use krte hain 
 
 app.post("/api/vi/signup",async(req,res)=>{

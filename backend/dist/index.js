@@ -25,6 +25,8 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 const middleware_1 = require("./middleware");
 const utils_1 = require("./utils");
+const cors_1 = __importDefault(require("cors"));
+app.use((0, cors_1.default)());
 // dev means developement ke time use krte hain 
 app.post("/api/vi/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const requirebody = zod_1.default.object({
