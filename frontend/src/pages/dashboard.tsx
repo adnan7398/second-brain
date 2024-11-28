@@ -7,9 +7,10 @@ import { Button } from '../components/button'
 import { Card } from '../components/card'
 import { CreateContentModel } from '../components/createmodel'
 import { Sidebar } from '../components/sidebar'
+import { useContent } from '../hooks/useConten'
 export function Dashboard() {
   const [modelOpen, setModelOpen] = useState(false);
-
+  const Contents = useContent();
   return ( <div>
     <div>
       <Sidebar/>
@@ -23,8 +24,10 @@ export function Dashboard() {
             <Button variant = 'secondry' text="Share Brain"  startIcon={<ShareIcon/>}></Button>
         </div>
         <div className='flex gap-4'>
-          <Card type='twitter' link="https://x.com/CPMG_Odisha/status/1691491338649481216" tittle="First Tweet"></Card>
-          <Card type='youtube' link="https://www.youtube.com/watch?v=yS8k-bWtMWk" tittle="First vedio"></Card>
+          
+          {Contents.map(({type,link,tittle})=>
+            <Card type={type} link={link} tittle={tittle}></Card>
+        )}
         </div>
     </div>
   </div>

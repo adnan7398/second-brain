@@ -15,7 +15,7 @@ const Tags = new mongoose_1.default.Schema({
 const contentTypes = ['image', 'video', 'article', 'audio'];
 const Content = new mongoose_1.default.Schema({
     link: { type: String, required: true },
-    // type:{type:String,enum:contentTypes,required:true},
+    type: { type: String, required: true },
     tittle: { type: String, required: true },
     tags: [{ type: mongoose_1.default.Types.ObjectId, ref: 'Tags', required: true }],
     userId: { type: mongoose_1.default.Types.ObjectId, ref: 'User', required: true },

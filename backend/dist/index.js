@@ -101,9 +101,11 @@ app.post("/api/v1/signin", (req, res) => __awaiter(void 0, void 0, void 0, funct
 app.post("/api/v1/content", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const link = req.body.link;
     const tittle = req.body.tittle;
+    const type = req.body.type;
     yield db_1.contentmodel.create({
         link,
         tittle,
+        type,
         userId: req.userId,
         tags: []
     });
