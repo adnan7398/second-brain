@@ -28,7 +28,7 @@ const utils_1 = require("./utils");
 const cors_1 = __importDefault(require("cors"));
 app.use((0, cors_1.default)());
 // dev means developement ke time use krte hain 
-app.post("/api/vi/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/api/v1/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const requirebody = zod_1.default.object({
         email: zod_1.default.string().min(5).max(20).email(),
         password: zod_1.default.string().min(8).max(20).refine((password) => {
@@ -70,7 +70,7 @@ app.post("/api/vi/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
         });
     }
 }));
-app.post("/api/vi/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/api/v1/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const email = req.body.email;
     const password = req.body.password;
     const response = yield db_1.Usermodel.findOne({
@@ -98,7 +98,7 @@ app.post("/api/vi/signin", (req, res) => __awaiter(void 0, void 0, void 0, funct
         });
     }
 }));
-app.post("/api/vi/content", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/api/v1/content", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const link = req.body.link;
     const tittle = req.body.tittle;
     yield db_1.contentmodel.create({
@@ -111,7 +111,7 @@ app.post("/api/vi/content", middleware_1.Usermiddleware, (req, res) => __awaiter
         messsage: "content added"
     });
 }));
-app.get("/api/vi/content", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/api/v1/content", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const content = yield db_1.contentmodel.find({
         userId: req.userId,
     }).populate("userId", "email");
@@ -119,7 +119,7 @@ app.get("/api/vi/content", middleware_1.Usermiddleware, (req, res) => __awaiter(
         content
     });
 }));
-app.delete("/api/vi/contents", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.delete("/api/v1/contents", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield db_1.contentmodel.deleteOne({
         userId: req.userId
     });
@@ -127,7 +127,7 @@ app.delete("/api/vi/contents", middleware_1.Usermiddleware, (req, res) => __awai
         Message: "content deleted"
     });
 }));
-app.post("/api/vi/brain/shares", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/api/v1/brain/shares", middleware_1.Usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const share = req.body.share;
     try {
         if (share) {
@@ -168,7 +168,7 @@ app.post("/api/vi/brain/shares", middleware_1.Usermiddleware, (req, res) => __aw
         });
     }
 }));
-app.get("/api/vi/brain/:sharelink", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/api/v1/brain/:sharelink", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const hash = req.params.sharelink;
     const link = yield db_1.Linkmodel.findOne({
         hash

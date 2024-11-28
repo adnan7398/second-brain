@@ -16,7 +16,7 @@ import cors from "cors"
 app.use(cors());
 // dev means developement ke time use krte hain 
 
-app.post("/api/vi/signup",async(req,res)=>{
+app.post("/api/v1/signup",async(req,res)=>{
         const requirebody= z.object({
             email:z.string().min(5).max(20).email(),
             password:z.string().min(8).max(20).refine((password)=>{
@@ -58,7 +58,7 @@ app.post("/api/vi/signup",async(req,res)=>{
         }
 })  
 
-app.post("/api/vi/signin",async(req,res)=>{
+app.post("/api/v1/signin",async(req,res)=>{
     const email = req.body.email;
     const password = req.body.password;
     const response = await Usermodel.findOne({
@@ -85,7 +85,7 @@ app.post("/api/vi/signin",async(req,res)=>{
         })
     }
 })
-app.post("/api/vi/content",Usermiddleware,async(req,res)=>{
+app.post("/api/v1/content",Usermiddleware,async(req,res)=>{
     const link = req.body.link;
     const tittle= req.body.tittle;
     await contentmodel.create({
@@ -99,7 +99,7 @@ app.post("/api/vi/content",Usermiddleware,async(req,res)=>{
     })
 
 })
-app.get("/api/vi/content",Usermiddleware,async(req,res)=>{
+app.get("/api/v1/content",Usermiddleware,async(req,res)=>{
     const content = await contentmodel.find({
         userId:req.userId, 
     }).populate("userId","email");
@@ -107,7 +107,7 @@ app.get("/api/vi/content",Usermiddleware,async(req,res)=>{
         content
     })
 })
-app.delete("/api/vi/contents",Usermiddleware,async(req,res)=>{
+app.delete("/api/v1/contents",Usermiddleware,async(req,res)=>{
     await contentmodel.deleteOne({
         userId : req.userId
     })
@@ -117,7 +117,7 @@ app.delete("/api/vi/contents",Usermiddleware,async(req,res)=>{
 
 })
 
-app.post("/api/vi/brain/shares",Usermiddleware, async (req,res)=>{
+app.post("/api/v1/brain/shares",Usermiddleware, async (req,res)=>{
     const share = req.body.share;
     try{
         if(share){
@@ -160,7 +160,7 @@ app.post("/api/vi/brain/shares",Usermiddleware, async (req,res)=>{
 
 });
 
-app.get("/api/vi/brain/:sharelink",async(req,res)=>{
+app.get("/api/v1/brain/:sharelink",async(req,res)=>{
     const hash = req.params.sharelink;
     const link = await Linkmodel.findOne({
         hash
